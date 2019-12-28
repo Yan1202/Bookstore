@@ -20,7 +20,7 @@ public class TimestenService {
 //        Connection conn= TTConnection.getConnection();
 //
 //        PreparedStatement psql;
-//        psql = conn.prepareStatement("select count(*) from book");
+//        psql = conn.prepareStatement("select title from book where isbn = '7806647880'");
 //        //psql.setString(1, name);
 //
 //        long start=System.currentTimeMillis();
@@ -29,22 +29,19 @@ public class TimestenService {
 //
 //        ResultSet resultSet=psql.getResultSet();
 //        while(resultSet.next()){  //循环遍历查询结果集
-//            String movie_name=resultSet.getString("movie_name");
-//            int versions_count=resultSet.getInt("versions_count");
-//            String versions=resultSet.getString("versions");
+//            String title=resultSet.getString("title");
+//            System.out.println(title);
 //
 //        }
-//        resultSet.last();
 //        psql.close();
-//
-//
 //        return null;
 //    }
 
     public static void main(String[] args) throws ClassNotFoundException, SQLException {
-        Connection conn= TTConnection.getConnection();
-        if(conn!=null){
+        Connection conn = TTConnection.getConnection();
+        if (conn != null) {
             System.out.println("yes");
         }
+
     }
 }
