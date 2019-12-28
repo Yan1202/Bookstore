@@ -1,7 +1,10 @@
 package com.db.bookstore.service;
 
+import com.db.bookstore.Util.Result;
+import com.db.bookstore.Util.ResultUtil;
 import com.db.bookstore.connection.OracleConnection;
 import com.db.bookstore.entity.Book;
+import org.springframework.stereotype.Service;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,12 +15,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+@Service("checkBookService")
 public class CheckBookService {
-    public Map<String,Object> checkDetail(String isbn) throws SQLException, ClassNotFoundException {
+    public Result checkDetail(String isbn) throws SQLException, ClassNotFoundException {
         Connection conn= OracleConnection.getConnection();
 
         PreparedStatement psql;
-        Map<String,Object> map=new HashMap<>();
         ArrayList<Book> books=new ArrayList<>();
 
 
@@ -43,10 +46,7 @@ public class CheckBookService {
         }
         psql.close();
 
-        map.put("data",books);
-        map.put("cost",(end-start));
-
-        return map;
+        return ResultUtil.success(books,end-start);
     }
 
 }

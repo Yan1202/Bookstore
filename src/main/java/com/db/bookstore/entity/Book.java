@@ -2,9 +2,13 @@ package com.db.bookstore.entity;
 
 import lombok.Data;
 
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.io.Serializable;
 import java.util.Date;
 
+@Table(name = "book")
+@Entity
 @Data
 public class Book implements Serializable {
     String isbn;
