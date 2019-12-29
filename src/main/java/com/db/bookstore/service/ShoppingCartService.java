@@ -21,8 +21,8 @@ public class ShoppingCartService {
         ArrayList<CartItem> items=new ArrayList<>();
 
 
-        psql=conn.prepareStatement("select isbn,title,price,stock,book_num from BOOK join SHOPPINGCART " +
-                "where  SHOPPINGCART.USER_ID= ?");
+        psql=conn.prepareStatement("select BOOK.ISBN as ISBN,TITLE,PRICE,STOCK,BOOK_NUM from oracle.BOOK join oracle.SHOPPINGCART " +
+                "on BOOK.ISBN=SHOPPINGCART.ISBN where SHOPPINGCART.USER_ID= ?");
         psql.setString(1,id);
         long start=System.currentTimeMillis();
         psql.execute();
@@ -30,11 +30,11 @@ public class ShoppingCartService {
 
         ResultSet resultSet=psql.getResultSet();
         while(resultSet.next()){
-            String book_isbn=resultSet.getString("isbn");
-            String title=resultSet.getString("title");
-            float price=resultSet.getFloat("price");
-            int stock=resultSet.getInt("stock");
-            int num=resultSet.getInt("book_num");
+            String book_isbn=resultSet.getString("ISBN");
+            String title=resultSet.getString("TITLE");
+            float price=resultSet.getFloat("PRICE");
+            int stock=resultSet.getInt("STOCK");
+            int num=resultSet.getInt("BOOK_NUM");
 
             CartItem item=new CartItem(num,book_isbn,title,price,stock);
             items.add(item);
@@ -50,7 +50,7 @@ public class ShoppingCartService {
 
         CallableStatement psql;
 
-        psql=conn.prepareCall("call COMMIT_ORDER(?,?,?)");
+        psql=conn.prepareCall("call oracle.COMMIT_ORDER(?,?,?)");
         psql.setString(1,id);
         psql.setString(2,isbn);
         psql.setInt(3,count);
@@ -58,9 +58,6 @@ public class ShoppingCartService {
         boolean result=psql.execute();
         long end=System.currentTimeMillis();
 
-        if(result==false){
-            return ResultUtil.error(ResultEnum.FAIL);
-        }
 
         return ResultUtil.success(end-start);
     }
@@ -71,7 +68,7 @@ public class ShoppingCartService {
 
         CallableStatement psql;
 
-        psql=conn.prepareCall("call ADD_ITEM(?,?,?)");
+        psql=conn.prepareCall("call oracle.ADD_ITEM(?,?,?)");
         psql.setString(1,id);
         psql.setString(2,isbn);
         psql.setInt(3,count);
@@ -79,35 +76,30 @@ public class ShoppingCartService {
         boolean result=psql.execute();
         long end=System.currentTimeMillis();
 
-        if(result==false){
-            return ResultUtil.error(ResultEnum.FAIL);
-        }
-
         return ResultUtil.success(end-start);
     }
 
     //delete item
     public Result deleteItem(String id,String isbn)throws SQLException, ClassNotFoundException {
+
         Connection conn= OracleConnection.getConnection();
 
         PreparedStatement psql;
 
-        psql=conn.prepareStatement("delete from SHOPPINGCART " +
-                "where ISBN=? and USER_ID=?");
-        psql.setString(1,isbn);
-        psql.setString(2,id);
+        psql=conn.prepareStatement("delete from ORACLE.SHOPPINGCART where USER_ID=? and ISBN=?");
+        psql.setString(1,id);
+        psql.setString(2,isbn);
         long start=System.currentTimeMillis();
-        boolean result=psql.execute();
+        psql.execute();
         long end=System.currentTimeMillis();
 
-        if(result==false){
-            return ResultUtil.error(ResultEnum.FAIL);
-        }
         return ResultUtil.success(end-start);
+
+
     }
 
     //reduce item
-    public Result reduceItem(String id,String isbn,int count)throws SQLException, ClassNotFoundException {
+    public Result updateItem(String id,String isbn,int count)throws SQLException, ClassNotFoundException {
         Connection conn= OracleConnection.getConnection();
 
         PreparedStatement psql;
@@ -116,18 +108,15 @@ public class ShoppingCartService {
             return ResultUtil.error(ResultEnum.FAIL);
         }
 
-        psql=conn.prepareStatement("update SHOPPINGCART set BOOK_NUM=?" +
+        psql=conn.prepareStatement("update oracle.SHOPPINGCART set BOOK_NUM=?" +
                 "where USER_ID=? and ISBN=?");
         psql.setInt(1,count);
         psql.setString(2,id);
         psql.setString(3,isbn);
         long start=System.currentTimeMillis();
-        boolean result=psql.execute();
+        psql.execute();
         long end=System.currentTimeMillis();
 
-        if(result==false){
-            return ResultUtil.error(ResultEnum.FAIL);
-        }
 
         return ResultUtil.success(end-start);
     }

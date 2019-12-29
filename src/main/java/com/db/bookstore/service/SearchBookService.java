@@ -17,36 +17,32 @@ import java.util.Map;
 @Service("searchBookService")
 public class SearchBookService {
 
-    public Result search(String title,String author,String publisher,float down,float up) throws SQLException, ClassNotFoundException {
+    public Result search(String isbn,String title,String author,String publisher,float down,float up) throws SQLException, ClassNotFoundException {
         Connection conn= OracleConnection.getConnection();
 
-        float low,high;
-        if(down>up){
-            low=up;
-            high=down;
-        }else{
-            low=down;
-            high=up;
-        }
         ArrayList<Book> books=new ArrayList<>();
         StringBuffer buffer=new StringBuffer();
-        buffer.append("select isbn,title,author,price,publisher from BOOK where 1=1");
+        buffer.append("select ISBN,TITLE,AUTHOR,PRICE,PUBLISHER from oracle.BOOK where 1=1");
 
         if(title!=null&&title!=""){
-            buffer.append(" and TITLE=%"+title+"% ");
+            buffer.append(" and TITLE LIKE \'%"+title+"%\' ");
+        }
+        if(isbn!=null&&isbn!=""){
+            buffer.append(" and ISBN= \'"+isbn+"\' ");
         }
         if(author!=null&&author!=""){
-            buffer.append(" and AUTHOR=%"+author+"% ");
+            buffer.append(" and AUTHOR LIKE \'%"+author+"%\' ");
         }
         if(publisher!=null&&publisher!=""){
-            buffer.append(" and PUBLISHER=%"+publisher+"% ");
+            buffer.append(" and PUBLISHER LIKE \'%"+publisher+"%\' ");
         }
         if(down>0){
-            buffer.append(" and PRICE>="+low);
+            buffer.append(" and PRICE>="+down);
         }
         if(up>0){
-            buffer.append(" and PRICE<="+high);
+            buffer.append(" and PRICE<="+up);
         }
+        System.out.println(buffer.toString());
         PreparedStatement psql=conn.prepareStatement(buffer.toString());
         long start=System.currentTimeMillis();
         psql.execute();
@@ -54,11 +50,11 @@ public class SearchBookService {
 
         ResultSet resultSet=psql.getResultSet();
         while(resultSet.next()){
-            String book_isbn=resultSet.getString("isbn");
-            String book_title=resultSet.getString("title");
-            String book_author=resultSet.getString("author");
-            float book_price=resultSet.getFloat("price");
-            String book_publisher=resultSet.getString("publisher");
+            String book_isbn=resultSet.getString("ISBN");
+            String book_title=resultSet.getString("TITLE");
+            String book_author=resultSet.getString("AUTHOR");
+            float book_price=resultSet.getFloat("PRICE");
+            String book_publisher=resultSet.getString("PUBLISHER");
             Book book=new Book(book_isbn,book_title,book_author,book_publisher,book_price);
             books.add(book);
         }

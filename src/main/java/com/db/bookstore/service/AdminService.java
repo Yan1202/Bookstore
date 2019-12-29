@@ -30,7 +30,7 @@ public class AdminService {
         if(reader==null){
             return ResultUtil.error(ResultEnum.NOT_FOUND);
         }
-
+        readerDao.delete(reader);
         return ResultUtil.success();
     }
 
@@ -46,8 +46,56 @@ public class AdminService {
     }
 
     public Result addBook(String isbn, String title, String author, String publisher, Date publishDate,String introduction,float price,int stock){
+        if(isbn==null||isbn==""){
+            return ResultUtil.error(ResultEnum.FAIL);
+        }
+
+        Book b=bookDao.findByIsbn(isbn);
+        if(b==null) {
+            return ResultUtil.error(ResultEnum.FAIL);
+        }
+
         Book book=new Book(isbn,title,author,publisher,price,publishDate,introduction,stock);
         bookDao.save(book);
+        return ResultUtil.success();
+    }
+
+    public Result updateBook(String isbn, String title, String author, String publisher, Date publishDate,String introduction,float price,int stock){
+        //error input
+        if(isbn==null||isbn==""){
+            return ResultUtil.error(ResultEnum.FAIL);
+        }
+
+        Book book=bookDao.findByIsbn(isbn);
+        if(book==null){
+            return ResultUtil.error(ResultEnum.NOT_FOUND);
+        }
+        //modify infos
+        if(title!=null&&title!=""){
+            book.setTitle(title);
+        }
+        if(author!=null&&author!=""){
+            book.setAuthor(author);
+        }
+        if(publisher!=null&&publisher!=""){
+            book.setPublisher(publisher);
+        }
+        if(introduction!=null&&introduction!=""){
+            book.setIntroduction(introduction);
+        }
+        if(publishDate!=null){
+            book.setPublish_time(publishDate);
+        }
+        if(stock!=-1){
+            book.setStock(stock);
+        }
+        if(price!=-1){
+            book.setPrice(price);
+        }
+
+        //save and flush
+        bookDao.saveAndFlush(book);
+
         return ResultUtil.success();
     }
 
@@ -56,23 +104,23 @@ public class AdminService {
 
         PreparedStatement psql;
 
-        psql=conn.prepareStatement("select ADMINISTRATOR.NAME as NAME from ADMINISTRATOR where ADMIN_ID=? and PASSWORD=?");
+        psql=conn.prepareStatement("select ADMINISTRATOR.NAME as NAME from oracle.ADMINISTRATOR where ADMIN_ID=? and PASSWORD=?");
         psql.setString(1,id);
         psql.setString(2,pwd);
         long start=System.currentTimeMillis();
-        boolean result=psql.execute();
+        psql.execute();
         long end=System.currentTimeMillis();
-        psql.close();
 
-        if(result==false){
-            return ResultUtil.error(ResultEnum.INVALID_USER);
-        }
+
         ResultSet resultSet=psql.getResultSet();
         while(resultSet.next()) {
-            return ResultUtil.success(resultSet.getString("NAME"),start-end);
+            String name=resultSet.getString("NAME");
+            psql.close();
+            return ResultUtil.success(name,end-start);
         }
 
-        return ResultUtil.error(ResultEnum.NOT_FOUND);
+        psql.close();
+        return ResultUtil.error(ResultEnum.INVALID_USER,end-start);
     }
 
 }

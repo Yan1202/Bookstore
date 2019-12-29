@@ -15,11 +15,16 @@ import java.util.Date;
 public class Reader implements Serializable {
     @Column(name="USER_ID")
     @Id
-    String id;
+    String userId;
+    @Column(name="NAME")
     String name;
+    @Column(name="GENDER")
     String gender;
+    @Column(name="BIRTH_DATE")
     Date birth_date;
-    int tel;
+    @Column(name="TEL")
+    Integer tel;
+    @Column(name="EMAIL")
     String email;
 
 

@@ -65,23 +65,25 @@ public class UserService {
 
         PreparedStatement psql;
 
-        psql=conn.prepareStatement("select READER.NAME as NAME from READER where USER_ID=? and PASSWORD=?");
+        psql=conn.prepareStatement("select NAME from oracle.READER where USER_ID=? and PASSWORD=?");
         psql.setString(1,id);
         psql.setString(2,pwd);
         long start=System.currentTimeMillis();
-        boolean result=psql.execute();
+        psql.execute();
         long end=System.currentTimeMillis();
-        psql.close();
 
-        if(result==false){
-            return ResultUtil.error(ResultEnum.INVALID_USER);
-        }
         ResultSet resultSet=psql.getResultSet();
-        while(resultSet.next()) {
-            return ResultUtil.success(resultSet.getString("NAME"),start-end);
+
+       while(resultSet.next()) {
+           System.out.println("login success");
+           String name=resultSet.getString("NAME");
+           psql.close();
+           return ResultUtil.success(name,end-start);
         }
 
-        return ResultUtil.error(ResultEnum.NOT_FOUND);
+       psql.close();
+       System.out.println("login fail");
+       return ResultUtil.error(ResultEnum.INVALID_USER,end-start);
     }
 
 
@@ -92,13 +94,12 @@ public class UserService {
 
         PreparedStatement psql;
 
-        psql=conn.prepareStatement("select ISBN,ORDER_DATE,ORDER_NUM,PRICE from BOOK_ORDER JOIN ORACLE.BOOK " +
+        psql=conn.prepareStatement("select BOOK.ISBN as ISBN,ORDER_DATE,ORDER_NUM,PRICE from oracle.BOOK_ORDER JOIN oracle.BOOK " +
                 "ON BOOK.ISBN=BOOK_ORDER.ISBN where USER_ID=? ");
         psql.setString(1,id);
         long start=System.currentTimeMillis();
-        boolean result=psql.execute();
+        psql.execute();
         long end=System.currentTimeMillis();
-        psql.close();
 
         ResultSet resultSet=psql.getResultSet();
         while(resultSet.next()) {
@@ -111,7 +112,9 @@ public class UserService {
             items.add(order);
         }
 
-        return ResultUtil.success(items,start-end);
+        psql.close();
+
+        return ResultUtil.success(items,end-start);
     }
 
 }

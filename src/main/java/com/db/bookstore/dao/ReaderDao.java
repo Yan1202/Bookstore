@@ -7,5 +7,4 @@ import java.util.Optional;
 
 
 public interface ReaderDao extends JpaRepository<Reader, String>{
-    Optional<Reader> findById(String user_id);
 }

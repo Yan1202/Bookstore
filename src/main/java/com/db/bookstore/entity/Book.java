@@ -2,6 +2,7 @@ package com.db.bookstore.entity;
 
 import lombok.Data;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -12,6 +13,7 @@ import java.util.Date;
 @Entity
 @Data
 public class Book implements Serializable {
+    @Column(name="ISBN")
     @Id
     String isbn;
     String title;
@@ -19,8 +21,8 @@ public class Book implements Serializable {
     String publisher;
     Date publish_time;
     String introduction;
-    float price;
-    int stock;
+    Float price;
+    Integer stock;
 
     public Book(String isbn,String title,String author,String publisher,float price,Date publish_time,String introduction,int stock){
         this.isbn=isbn;

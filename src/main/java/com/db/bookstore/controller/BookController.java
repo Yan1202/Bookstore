@@ -6,12 +6,14 @@ import com.db.bookstore.service.SearchBookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+@RestController
 @RequestMapping("/book")
 public class BookController {
     @Autowired
@@ -27,6 +29,7 @@ public class BookController {
     @RequestMapping("/search")
     public Result search(HttpServletRequest request) throws SQLException, ClassNotFoundException {
         String title=request.getParameter("title");
+        String isbn=request.getParameter("isbn");
         String author=request.getParameter("author");
         String publisher=request.getParameter("publisher");
         float down=0,up=0;
@@ -37,6 +40,6 @@ public class BookController {
             up=Float.parseFloat(request.getParameter("up"));
         }
 
-        return searchBookService.search(title,author,publisher,down,up);
+        return searchBookService.search(isbn,title,author,publisher,down,up);
     }
 }

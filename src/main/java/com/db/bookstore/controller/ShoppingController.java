@@ -5,10 +5,12 @@ import com.db.bookstore.service.ShoppingCartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.sql.SQLException;
 
+@RestController
 @RequestMapping("/shopping")
 public class ShoppingController {
     @Autowired
@@ -45,12 +47,12 @@ public class ShoppingController {
         return shoppingCartService.deleteItem(id,isbn);
     }
 
-    @RequestMapping("/reduce")
+    @RequestMapping("/update")
     public Result reduceItem(HttpServletRequest request) throws SQLException, ClassNotFoundException {
         String id=request.getParameter("id");
         String isbn=request.getParameter("isbn");
         int count=Integer.parseInt(request.getParameter("count"));
 
-        return shoppingCartService.reduceItem(id,isbn,count);
+        return shoppingCartService.updateItem(id,isbn,count);
     }
 }

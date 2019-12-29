@@ -24,7 +24,7 @@ public class CheckBookService {
         ArrayList<Book> books=new ArrayList<>();
 
 
-        psql=conn.prepareStatement("select * from BOOK where BOOK.ISBN = ?");
+        psql=conn.prepareStatement("select * from oracle.BOOK where BOOK.ISBN = ?");
         psql.setString(1,isbn);
         long start=System.currentTimeMillis();
         psql.execute();
