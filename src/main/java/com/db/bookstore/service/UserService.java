@@ -26,7 +26,7 @@ public class UserService {
 
     public Result getInfos(String id) throws SQLException, ClassNotFoundException {
 
-        Reader reader=readerDao.findByUser_id(id);
+        Reader reader=readerDao.findById(id).get();
 
         return ResultUtil.success(reader);
     }
@@ -34,7 +34,7 @@ public class UserService {
    public Result modifyInfos(String id,String name,String gender,Date birth,int tel,String email){
 
         //search user
-        Reader reader=readerDao.findByUser_id(id);
+        Reader reader=readerDao.findById(id).get();
         if(reader==null){
             return ResultUtil.error(ResultEnum.NOT_FOUND);
         }

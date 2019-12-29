@@ -2,9 +2,10 @@ package com.db.bookstore.dao;
 
 import com.db.bookstore.entity.Reader;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+
+import java.util.Optional;
 
 
-public interface ReaderDao extends JpaRepository<Reader, String>, JpaSpecificationExecutor {
-    Reader findByUser_id(String id);
+public interface ReaderDao extends JpaRepository<Reader, String>{
+    Optional<Reader> findById(String user_id);
 }

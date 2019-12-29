@@ -26,7 +26,7 @@ public class AdminService {
     private BookDao bookDao;
 
     public Result deleteReader(String id){
-        Reader reader=readerDao.findByUser_id(id);
+        Reader reader=readerDao.findById(id).get();
         if(reader==null){
             return ResultUtil.error(ResultEnum.NOT_FOUND);
         }
@@ -56,7 +56,7 @@ public class AdminService {
 
         PreparedStatement psql;
 
-        psql=conn.prepareStatement("select ADMINISTRATOR.NAME as name from ADMINISTRATOR where ADMIN_ID=? and PASSWORD=?");
+        psql=conn.prepareStatement("select ADMINISTRATOR.NAME as NAME from ADMINISTRATOR where ADMIN_ID=? and PASSWORD=?");
         psql.setString(1,id);
         psql.setString(2,pwd);
         long start=System.currentTimeMillis();
@@ -69,7 +69,7 @@ public class AdminService {
         }
         ResultSet resultSet=psql.getResultSet();
         while(resultSet.next()) {
-            return ResultUtil.success(resultSet.getString("name"),start-end);
+            return ResultUtil.success(resultSet.getString("NAME"),start-end);
         }
 
         return ResultUtil.error(ResultEnum.NOT_FOUND);

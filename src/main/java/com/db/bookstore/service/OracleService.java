@@ -7,11 +7,6 @@ import org.springframework.stereotype.Service;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-/**
- * @Author: yan
- * @Date: 2019/12/28
- * @Description:
- **/
 
 @Service
 public class OracleService {
