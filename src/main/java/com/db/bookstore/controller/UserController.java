@@ -52,9 +52,8 @@ public class UserController {
     }
 
     @RequestMapping("/orders")
-    public Result myOrder(@RequestParam(value="id")String id) throws SQLException, ClassNotFoundException {
-        return userService.myOrder(id);
+    public Result myOrder(@RequestParam(value="id")String id,@RequestParam(value="page",required = false,defaultValue = "0")int page) throws SQLException, ClassNotFoundException {
+        return userService.myOrder(id,page);
     }
-
 
 }

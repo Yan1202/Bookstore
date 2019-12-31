@@ -16,6 +16,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.Optional;
 
 @Service("adminService")
 public class AdminService {
@@ -47,11 +48,12 @@ public class AdminService {
 
     public Result addBook(String isbn, String title, String author, String publisher, Date publishDate,String introduction,float price,int stock){
         if(isbn==null||isbn==""){
+            System.out.println("fail");
             return ResultUtil.error(ResultEnum.FAIL);
         }
 
         Book b=bookDao.findByIsbn(isbn);
-        if(b==null) {
+        if(b!=null) {
             return ResultUtil.error(ResultEnum.FAIL);
         }
 
@@ -123,4 +125,13 @@ public class AdminService {
         return ResultUtil.error(ResultEnum.INVALID_USER,end-start);
     }
 
+    public Result addReader(String id,String name,String gender,String pwd,Date birth,int tel,String email){
+        Optional<Reader> optional=readerDao.findById(id);
+        if(optional.isPresent()){
+            return ResultUtil.error(ResultEnum.OCCUPIED);
+        }
+        Reader reader=new Reader(id,name,gender,birth,tel,email,pwd);
+        readerDao.saveAndFlush(reader);
+        return ResultUtil.success();
+    }
 }

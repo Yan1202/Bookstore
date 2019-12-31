@@ -1,28 +1,31 @@
 package com.db.bookstore.service;
 
+import com.db.bookstore.Util.ConstantUtil;
 import com.db.bookstore.Util.Result;
 import com.db.bookstore.Util.ResultEnum;
 import com.db.bookstore.Util.ResultUtil;
 import com.db.bookstore.connection.OracleConnection;
+import com.db.bookstore.dao.OrderDao;
 import com.db.bookstore.dao.ReaderDao;
-import com.db.bookstore.entity.Book;
-import com.db.bookstore.entity.CartItem;
-import com.db.bookstore.entity.OrderList;
-import com.db.bookstore.entity.Reader;
+import com.db.bookstore.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.*;
 
 @Service("userService")
 public class UserService {
     @Autowired
     private ReaderDao readerDao;
+    @Autowired
+    private OrderDao orderDao;
 
     public Result getInfos(String id) throws SQLException, ClassNotFoundException {
 
@@ -86,35 +89,35 @@ public class UserService {
        return ResultUtil.error(ResultEnum.INVALID_USER,end-start);
     }
 
-
-    public Result myOrder(String id) throws SQLException, ClassNotFoundException {
-        Connection conn= OracleConnection.getConnection();
-        ArrayList<OrderList> items=new ArrayList<>();
-
-
-        PreparedStatement psql;
-
-        psql=conn.prepareStatement("select BOOK.ISBN as ISBN,ORDER_DATE,ORDER_NUM,PRICE from oracle.BOOK_ORDER JOIN oracle.BOOK " +
-                "ON BOOK.ISBN=BOOK_ORDER.ISBN where USER_ID=? ");
-        psql.setString(1,id);
+    public Result myOrder(String id,int page) throws SQLException, ClassNotFoundException {
+        Map<String,Object> map=new HashMap<String, Object>();
+        Sort sort = Sort.by(Sort.Direction.DESC,"id");
         long start=System.currentTimeMillis();
-        psql.execute();
+        Page<Order> pg=orderDao.findByUserId(id,PageRequest.of(page, ConstantUtil.PAGE_SIZE,sort));
+        List<Order> orders=pg.getContent();
         long end=System.currentTimeMillis();
 
-        ResultSet resultSet=psql.getResultSet();
-        while(resultSet.next()) {
-            String isbn=resultSet.getString("ISBN");
-            Date date=resultSet.getDate("ORDER_DATE");
-            int num=resultSet.getInt("ORDER_NUM");
-            float price=resultSet.getFloat("PRICE");
+        map.put("current",page);
+        map.put("total",pg.getTotalPages());
+        map.put("item",orders);
 
-            OrderList order=new OrderList(isbn,date,num,price*num);
-            items.add(order);
-        }
+        return ResultUtil.success(map,end-start);
+    }
 
-        psql.close();
+    public Result showAll(int page){
+        Map<String,Object> map=new HashMap<String, Object>();
+        Sort sort = Sort.by(Sort.Direction.DESC,"id");
+        long start=System.currentTimeMillis();
+        Page<Reader> pg=readerDao.findAll(PageRequest.of(page, ConstantUtil.PAGE_SIZE,sort));
+        List<Reader> readers=pg.getContent();
+        long end=System.currentTimeMillis();
 
-        return ResultUtil.success(items,end-start);
+
+        map.put("current",page);
+        map.put("total",pg.getTotalPages());
+        map.put("list",readers);
+
+        return ResultUtil.success(map,end-start);
     }
 
 }

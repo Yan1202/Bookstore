@@ -2,6 +2,7 @@ package com.db.bookstore.controller;
 
 import com.db.bookstore.Util.Result;
 import com.db.bookstore.service.AdminService;
+import com.db.bookstore.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,6 +19,34 @@ import java.util.Date;
 public class AdminController {
     @Autowired
     AdminService adminService;
+    @Autowired
+    UserService userService;
+
+    @RequestMapping("/showAllUser")
+    public Result showUsers(@RequestParam(value="page",defaultValue = "0",required = false)int page){
+        return userService.showAll(page);
+
+    }
+
+    @RequestMapping("/addReader")
+    public Result addReader(HttpServletRequest request) throws ParseException {
+        String id=request.getParameter("id");
+        String gender=request.getParameter("gender");
+        String name=request.getParameter("name");
+        String email=request.getParameter("email");
+        String pwd=request.getParameter("pwd");
+        int tel=0;
+        Date date=null;
+        if(request.getParameter("tel")!=null){
+            tel=Integer.parseInt(request.getParameter("tel"));
+        }
+        if(request.getParameter("birth")!=null){
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            date=sdf.parse(request.getParameter("birth"));
+        }
+
+        return adminService.addReader(id,name,gender,pwd,date,tel,email);
+    }
 
     @RequestMapping("/deleteReader")
     public Result deleteReader(@RequestParam(value="id")String id){

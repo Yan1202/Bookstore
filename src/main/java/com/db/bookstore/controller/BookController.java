@@ -33,13 +33,31 @@ public class BookController {
         String author=request.getParameter("author");
         String publisher=request.getParameter("publisher");
         float down=0,up=0;
+        int page=0;
         if(request.getParameter("down")!=null){
             down=Float.parseFloat(request.getParameter("down"));
         }
         if(request.getParameter("up")!=null){
             up=Float.parseFloat(request.getParameter("up"));
         }
+        if(request.getParameter("page")!=null){
+            page=Integer.parseInt(request.getParameter("page"));
+        }
 
-        return searchBookService.search(isbn,title,author,publisher,down,up);
+        return searchBookService.search(isbn,title,author,publisher,down,up,page);
+    }
+
+    @RequestMapping("/buyNow")
+    public Result buyNow(HttpServletRequest request) throws SQLException, ClassNotFoundException {
+        String id=request.getParameter("id");
+        String isbn=request.getParameter("isbn");
+        int count=Integer.parseInt(request.getParameter("count"));
+
+        return checkBookService.buyNow(id,isbn,count);
+    }
+
+    @RequestMapping("/showAll")
+    public Result showAll(@RequestParam(value = "page",defaultValue = "0",required =false)int page){
+        return searchBookService.showAll(page);
     }
 }

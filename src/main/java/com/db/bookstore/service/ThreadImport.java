@@ -1,6 +1,7 @@
 package com.db.bookstore.service;
 
 import com.db.bookstore.connection.OracleConnection;
+import com.db.bookstore.connection.TTConnection;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -21,10 +22,13 @@ public class ThreadImport {
                     Connection con=null;
 
                     try {
-                        con= OracleConnection.getConnection();
+                        //con=OracleConnection.getConnection();
+                         con= TTConnection.getConnection();
                         Statement st=con.createStatement();
                         for(int i=1;i<=7200/ThreadNum;i++){
-                            st.addBatch("call oracle.COMMIT_ORDER('114','66206',3)");
+                            String sql="call COMMIT_ORDER('122','123456',4)";
+                            //String sql="insert into oracle.TAG(TAG_NAME, TAG_ID) values('Opera','1234')";
+                            st.addBatch(sql);
                             if(i%600==0){
                                 st.executeBatch();
                             }
@@ -54,7 +58,8 @@ public class ThreadImport {
     }
     public static void main(String[] args) throws Exception {
         ThreadImport ti=new ThreadImport();
-        ti.multiThreadImport(40);
+        ti.multiThreadImport(1);
+
         System.out.println("笔记本CPU数:"+Runtime.getRuntime().availableProcessors());
     }
 
